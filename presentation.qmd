@@ -1,0 +1,214 @@
+---
+title: "A mathematician, a statistician, and an accountant apply for a bank job"
+author: "Matt Bledsoe"
+date: April 21, 2023
+format:
+  revealjs:
+    theme: dark
+    incremental: true
+---
+
+
+## Why would a bank want to hire a math graduate?
+
+. . . 
+
+> Banks rely heavily on quantitative analysis and models in most aspects of financial decision making.
+> 
+> -- _Board of Governors of the Federal Reserve System, Office of Comptroller of the Currency, 2011_
+
+::: {.incremental}
+-   Quantification of risk $\Rightarrow$ models
+-   Increasing amounts of data and computing resources available $\Rightarrow$ bigger models
+-   (De-)Regulation $\Rightarrow$ more models
+:::
+
+## Why would a bank want to hire a math graduate?
+
+- Math/statistics knowledge
+- Programming
+- Conceptual thinkers
+- Skeptical
+
+## Liquidity Risk
+
+:::: {.columns}
+::: {.column width="40%"}
+![](img/svb_logo.png)
+
+:::{.fragment}
+![](img/JimmieStewart_slideshow.jpg) 
+:::
+
+:::
+
+::: {.column width="60%"}
+- It's always liquidity!!!
+- The inability, actual or _perceived_, of a financial institution to meet its obligations
+- Can be very fast-paced as time horizons are short (intraday, daily, weekly)
+- Very difficult to model with "traditional" techniques
+:::
+::::
+
+## Market Risk {.smaller}
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| output: false
+
+# Load packages and data
+library(tidyverse)
+
+# Get FHN stock price and limit the dates
+quantmod::getSymbols("FHN")
+fhn <- as_tibble(FHN, rownames = "date") |> 
+  mutate(date = as.Date(date)) |> 
+  filter(date <= "2023-04-12")
+```
+
+:::: {.columns style='display: flex !important;'}
+::: {.column width="50%" style='display: flex; align-items: center;'}
+```{r fhn-plot}
+#| fig-height: 7.5
+fhn |> 
+  ggplot(aes(x = date, y = FHN.Close)) +
+  geom_line() +
+  scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+  labs(x = "", y = "", title = "Closing price of FHN",
+       caption = "Yahoo! Finance, retrieved with Quantmod") +
+  theme_minimal()
+```
+:::
+
+::: {.column width="50%"}
+-   Financial mathematics
+-   Primarily deals with the (change in) value of financial instruments
+- At banks since the Volcker Rule
+  + Trading is done on behalf of clients (in a separate subsidiary) or is "plain vanilla"
+  + Mainly interested in the effect of movements of interest rates on the expected income/expense or value of interest-bearing contracts (loans, deposits, bonds, interest rate swaps)
+:::
+::::
+
+## Operational Risk
+
+:::: {.columns}
+
+::: {.column width="40%"}
+> Risk of loss from inadequate or failed internal processes, people, and systems or from external events.
+> 
+> _- Basel Committee on Banking Supervision_
+
+:::
+
+::: {.column width="60%"}
+::: {.incremental}
+- Cyber attacks, natural disasters, legal settlements, system failures, "fat finger" mistakes
+- Fraud
+- Anti-Money Laundering
+![](img/ozark.jpg){height=300}
+:::
+:::
+
+::::
+
+## Credit Risk {.smaller}
+
+```{r setup2}
+#| warning: false
+#| output: false
+#| echo: false
+#| message: false
+
+# Get NCO rate data from FRED
+fred_url <- "https://api.stlouisfed.org/fred/series/observations"
+# Each user needs a (free) API key from FRED. This assumes it's stored in an
+# environment variable (i.e., in ~/.Renviron) called FRED_API_KEY
+query <- list(series_id = "QBPLNTLNNTCGOFFR",
+              api_key = Sys.getenv("FRED_API_KEY"),
+              file_type = "json")
+res <- httr::GET(fred_url, query = query)
+dat <- jsonlite::fromJSON(rawToChar(res$content))
+```
+
+
+:::: {.columns style='display: flex !important;'}
+::: {.column width="50%" style='display: flex; align-items: center;'}
+
+```{r nco-plot}
+#| fig-height: 7.5
+dat$observations |> 
+  mutate(date = as.Date(date),
+         value = as.numeric(value) / 100) |> 
+  filter(date >= as.Date("2000-01-01")) |> 
+  ggplot(aes(x = date, y = value)) + 
+  geom_line() +
+  scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "", y = "",
+       title = "Net Charge-Off Rate on Total Loans and Leases",
+       caption = "Federal Deposit Insurance Corporation, retrieved from FRED") +
+  theme_minimal()
+```
+:::
+
+::: {.column}
+- The risk of financial loss due to customers not paying their loans as agreed
+- Loss Forecasting
+  + Stress Testing
+  + Allowance for Credit Losses
+- Credit scores/ratings
+  ![](img/FICO_Logo.jpg){fig-height="50%"}
+:::
+
+::::
+
+## Model Risk
+
+:::: {.columns}
+
+::: {.column width="60%"}
+> The potential for adverse consequences from decisions based on incorrect or misused model outputs and reports
+>
+> -- _Board of Governors of the Federal Reserve System, Office of Comptroller of the Currency, 2011_
+:::
+
+::: {.column width="40%"}
+
+::: {.fragment}
+![](img/WhenGeniusFailed-bookcover.jpg)
+:::
+
+::: 
+
+::::
+
+## Skills
+
+::: {.incremental}
+- Software: R/Python, SQL/Databases, SAS, Microsoft Office
+- Modeling: Linear and Generalized Linear Models, Time Series, Survival Analysis, Markov Chains, Machine Learning Techniques
+- Communication
+    + "If you didn't document it, you didn't do it"
+    + PowerPoint
+:::
+
+## Challenges
+
+![](img/dilbert_piechart2.gif)
+
+::: {.incremental}
+- Oversight
+- Ego
+- "Boring"
+:::
+
+## Why would a math graduate want to work at a bank?
+
+- Various and interesting problems to solve using math/stats
+- High demand, short supply
+- Chance to positively influence decisions and culture
+- Geographically diverse opportunities
+
+# Thank you!
